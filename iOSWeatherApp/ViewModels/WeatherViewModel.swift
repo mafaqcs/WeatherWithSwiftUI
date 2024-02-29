@@ -8,7 +8,7 @@
 import Foundation
 
 class WeatherViewModel: ObservableObject {
-    private var temperatureService: WeatherServiceAPI!
+    private var weatherServiceAPI: WeatherServiceAPI!
     @Published var city_name: String = ""
     @Published var weatherResponse = WeatherResponse.init(name: "", dt: 0, timezone: 0, main: Main(), wind: Wind(), weather: [], sys: Sys())
     @Published var dayTime: Bool = true
@@ -16,7 +16,7 @@ class WeatherViewModel: ObservableObject {
 
     /// Initialize the WeatherServiceAPI
     init() {
-        self.temperatureService = WeatherServiceAPI()
+        self.weatherServiceAPI = WeatherServiceAPI()
         weatherDate = self.weatherResponse.dt
     }
     
@@ -211,27 +211,19 @@ class WeatherViewModel: ObservableObject {
     
     /// City name
     var cityName: String = ""
-    var cityNameOnLoad: String = ""
     
     /// Search for city
     public func search(searchText: String) {
         /// You need to add the 'addingPercentEncoding' property so you can search for cities
         /// with space between words, otherwise it will only work on single word cities.
         if let city = searchText.addingPercentEncoding(withAllowedCharacters: .alphanumerics) {
-            fetchWeatherDetails(by: city, byCoordinates: false, lat: 0.0, long: 0.0)
-        }
-    }
-    
-    /// Search for weather in a city upon the app loads.
-    public func searchOnLoad(city: String, lat: Double, long: Double) {
-        if let city = city.addingPercentEncoding(withAllowedCharacters: .alphanumerics) {
-            fetchWeatherDetails(by: city, byCoordinates: true, lat: lat, long: long)
+            fetchWeatherDetails(city: city, byCoordinates: false, lat: 0.0, long: 0.0)
         }
     }
     
     /// Get the current weather by zip code.
     public func getWeatherByZipCode(by zip: String, country_code: String) {
-        self.temperatureService.getWeatherByZipCode(zip: zip, country_code: country_code) { weather in
+        self.weatherServiceAPI.weatherByZipCode(zip: zip, country_code: country_code) { weather in
             if let weather = weather {
                 DispatchQueue.main.async {
                     self.weatherResponse = weather
@@ -241,9 +233,9 @@ class WeatherViewModel: ObservableObject {
     }
     
     /// Fetch the weather by city or coordinates
-    private func fetchWeatherDetails(by city: String, byCoordinates: Bool, lat: Double, long: Double) {
+    public func fetchWeatherDetails(city: String, byCoordinates: Bool, lat: Double, long: Double) {
         /// Trigger the getWeather service from the WeatherServiceAPI.swift
-        self.temperatureService.getWeather(city: city, byCoordinates: byCoordinates, lat: lat, long: long) { weather  in
+        self.weatherServiceAPI.weatherbyCityORCoordinates(city: city, byCoordinates: byCoordinates, lat: lat, long: long) { weather  in
             
             if let weather = weather {
                 DispatchQueue.main.async {

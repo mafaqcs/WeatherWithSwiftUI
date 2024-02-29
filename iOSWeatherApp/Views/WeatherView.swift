@@ -17,14 +17,6 @@ struct WeatherView: View {
     /// The location manager is the class that fetches the location of the user
     /// This requires 'Privacy' location proerties in the info.plist file.
     @ObservedObject var locationManager = LocationManager()
-    
-    /// Show the search city text field or not.
-    @State var searchCity: Bool = false
-    
-    @State var iconScaleInitSize: CGFloat = 0.0
-    
-    @State var showAlert: Bool = false
-    
     /// The city associated with the area.
     var placemark: String { return("\(locationManager.placemark?.locality ?? "")") }
     
@@ -47,8 +39,9 @@ struct WeatherView: View {
     var country_code: String { return locationManager.placemark?.isoCountryCode ?? "PK" }
     
     /// The name of the country.
-    var country_name: String { return locationManager.placemark?.country ?? "Islamabad" }
+    var country_name: String { return locationManager.placemark?.country ?? "Pakistan" }
     
+    @State var showAccessAlert: Bool = false
     @State var searchField = ""
     
     var body: some View {
@@ -59,7 +52,7 @@ struct WeatherView: View {
             ScrollView(showsIndicators: false) {
                 /// Top Info (weather condition, city, date and weather icon).
                 VStack {
-                    HStack(spacing: 20) {
+                    HStack(spacing: 16) {
                         /// City search text field.
                         HStack {
                             TextField("Enter city name", text: self.$searchField) {
@@ -76,8 +69,10 @@ struct WeatherView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                         
                         Button(action: {
-                            self.weatherVM.getWeatherByZipCode(by: self.zip, country_code: self.country_code)
-                            self.showAlert = true
+                            if self.isLocationGranted() {
+                                self.weatherVM.fetchWeatherDetails(city: "", byCoordinates: true, lat: self.latitude, long: self.longitude)
+                            }
+                            self.showAccessAlert = !self.isLocationGranted()
                             self.searchField = ""
                         }) {
                             Image(systemName: "location.fill")
@@ -85,12 +80,11 @@ struct WeatherView: View {
                         .font(.system(size: 20))
                         .foregroundColor(Color.white)
                         .shadow(color: Color.black.opacity(0.20), radius: 5, x: 0, y: 6)
-                        .alert(isPresented: $showAlert) {
-                            Alert(title: Text("Your Location"), message: Text("You are currently located at \(self.placemark), \(self.administrativeArea) \(self.country_name)"), dismissButton: .default(Text("Got it!")))
+                        .alert(isPresented: $showAccessAlert) {
+                            Alert(title: Text("Location Access"), message: Text("Your have not granted location access"), dismissButton: .default(Text("Close")))
                         }
                         
                         Button(action: {
-                            self.weatherVM.getWeatherByZipCode(by: self.zip, country_code: self.country_code)
                             self.searchField = ""
                         }) {
                             Image(systemName: "arrow.2.circlepath")
@@ -227,5 +221,15 @@ struct DetailCell: View {
 struct Home_Previews: PreviewProvider {
     static var previews: some View {
         WeatherView().environmentObject(WeatherViewModel())
+    }
+}
+
+extension WeatherView {
+    func isLocationGranted() -> Bool {
+        if self.locationManager.status == .denied
+            || self.locationManager.status == .notDetermined {
+            return false
+        }
+        return true
     }
 }

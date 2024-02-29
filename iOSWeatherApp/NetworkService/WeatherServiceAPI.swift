@@ -9,7 +9,7 @@ import Foundation
 
 class WeatherServiceAPI {
     /// Get the current weather forecast for a given city.
-    func getWeather(city: String, byCoordinates: Bool, lat: Double, long: Double, completion: @escaping (WeatherResponse?) -> ()) {
+    func weatherbyCityORCoordinates(city: String, byCoordinates: Bool, lat: Double, long: Double, completion: @escaping (WeatherResponse?) -> ()) {
         
         let coordsUrl = Constants.openWeatherAPIUrl + "lat=\(lat)&lon=\(long)" + "&appid=\(Constants.APIKey)" + "&units=metric"
         let cityUrl = Constants.openWeatherAPIUrl + "q=\(city)" + "&appid=\(Constants.APIKey)" + "&units=metric"
@@ -36,7 +36,7 @@ class WeatherServiceAPI {
     }
     
     /// Get the weather forecast using zip and country code.
-    func getWeatherByZipCode(zip: String, country_code: String, completion: @escaping (WeatherResponse?) -> ()) {
+    func weatherByZipCode(zip: String, country_code: String, completion: @escaping (WeatherResponse?) -> ()) {
         
         let zipUrl = Constants.openWeatherAPIUrl + "zip=\(zip),\(country_code)" + "&appid=\(Constants.APIKey)" + "&units=metric"
         
