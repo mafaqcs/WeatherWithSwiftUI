@@ -10,6 +10,18 @@ Additionally, the application allows users to refresh the weather data, retrieve
 - To refresh weather data, simply press the  on the screen or tap the refresh button.
 
 
+## Requirements & Installation
+Here are the requirements to run this project :
+- Xcode 13 or later
+- Swift 5 or later
+- Internet connectivity to fetch weather data from the API
+
+Installation steps are given below :
+- Clone the repository to your local machine
+- Open the project in Xcode.
+- Build and run the application on a simulator or a physical device.
+
+
 ## API Reference
 https://openweathermap.org/current
 
@@ -49,3 +61,8 @@ https://api.openweathermap.org/data/2.5/weather?zip={Zip_Code}&appid={API_Key}
 ## Application Demo Gif
 
 https://github.com/mafaqcs/WeatherWithSwiftUI/blob/main/WeatherDemo.gif
+## License
+
+This project is licensed under the MIT License - (https://opensource.org/license/mit)
+
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
